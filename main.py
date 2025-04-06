@@ -1,4 +1,5 @@
 from genverb import GenVerb
+from db import Database
 
 def main():
     try:
@@ -6,9 +7,14 @@ def main():
         with open(".apikey", mode="r") as f:
             apikey = f.readline()
 
-        # test
-        res = GenVerb(apikey).gen_verb_data("cavalcare")
+        res = GenVerb(apikey).gen_verb_data("chiedere")
+        db = Database()
+
+        db.connect()
+        db.runSqlFile("schema.sql")
         print(res.parsed)
+        db.addVerb(res.parsed)
+        db.close()
 
     except IOError as e:
         print(".apikey not found")

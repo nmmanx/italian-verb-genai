@@ -5,9 +5,9 @@ from pydantic import BaseModel
 MODEL = "gemini-2.0-flash"
 PROMPT="""Generate verb conjugations for the italian verb \"{}\" with the following requirements:
 - Only giving the conjugated verb, no need pronouns.
-- The conjugation list must have 6 elements and be ordered: 1st-person singular (leave empty for imperativo), 2nd-person singular, 3rd-person singular, 1st-person plural, 2nd-person plural, 3rd-person plural.
+- The conjugation list must have 6 elements and be ordered: 1st-person singular, 2nd-person singular, 3rd-person singular, 1st-person plural, 2nd-person plural, 3rd-person plural.
 - Prefix @ to all irregular conjugations, including irregular participio(s).
-- Don't miss any conjugation, especially the imperativo.
+- For imperativo, list all conjugations except 1st-person (leave it bank).
 """
 
 class Conjugation(BaseModel):
