@@ -15,8 +15,17 @@ class FrontEnd:
     def addVerb(self, verb):
         self.backend.addVerb(verb)
 
-    def addVerbFromFile(self, list_file):
-        pass
+    def addVerbFromFile(self, list_file, count):
+        try:
+            with open(list_file, mode="r") as f:
+                i = 0
+                for line in f:
+                    self.addVerb(line.strip())
+                    i += 1
+                    if count > 0 and i >= count:
+                        break
+        except IOError as e:
+            print(e)
 
 class BackEnd:
     def __init__(self, apikey):
@@ -64,9 +73,8 @@ def main():
     backend.init()
 
     frontend = FrontEnd(backend)
-
-    verb = "svegliarsi"
-    frontend.addVerb(verb)
+    frontend.addVerbFromFile("verb_list/ita/top20.txt", -1)
+    frontend.addVerbFromFile("verb_list/ita/top10_ref.txt", -1)
 
 if __name__ == "__main__":
     main()
