@@ -4,12 +4,10 @@ from genverb import ItaVerb
 DB_NAME = "itaverb.db"
 
 COLUMNS_TABLE_VERB = [
-    'verb',
+    'inf_pre',
     'eng',
     'aux_verb',
     'is_irregular',
-    'is_reflexive',
-    'inf_pre',
     'ger_pre',
     'par_pre',
     'par_pas',
@@ -46,10 +44,16 @@ class Database:
         try:
             with open(file, mode="r") as f:
                 sql = f.read()
-                cursor.execute(sql)
+                cursor.executescript(sql)
                 self.conn.commit()
-        except IOError:
-            pass
+        except IOError as e:
+            print(e)
+
+    def hasVerb(self, verb):
+        query = "SELECT inf_pre FROM verbs WHERE inf_pre=?"
+        cursor = self.conn.cursor()
+        res = cursor.execute(query, (verb, )).fetchall()
+        return len(res) > 0
 
     def addVerb(self, verb: ItaVerb):
         columns_str = ",".join(COLUMNS_TABLE_VERB)
@@ -58,18 +62,14 @@ class Database:
 
         values = []
         for c in COLUMNS_TABLE_VERB:
-            if c == "verb":
-                values.append(verb.name)
+            if c == "inf_pre":
+                values.append(verb.conjugations.infinito_presente)
             elif c == "eng":
                 values.append(verb.english)
             elif c == "aux_verb":
                 values.append(verb.auxiliary_verb)
             elif c == "is_irregular":
                 values.append(str(verb.has_irregular_conjugations))
-            elif c == "is_reflexive":
-                values.append(str(verb.is_reflexive))
-            elif c == "inf_pre":
-                values.append(verb.conjugations.infinito_presente)
             elif c == "ger_pre":
                 values.append(verb.conjugations.gerundio_presente)
             elif c == "par_pre":
@@ -109,4 +109,10 @@ class Database:
 
         cursor = self.conn.cursor()
         cursor.execute(query, tuple(values))
+        self.conn.commit()
+
+    def addReflexiveVerb(self, verb, regular_form):
+        query = "INSERT INTO reflexive_verbs (inf_pre, regular_form) VALUES (?, ?)"
+        cursor = self.conn.cursor()
+        cursor.execute(query, (verb, regular_form))
         self.conn.commit()

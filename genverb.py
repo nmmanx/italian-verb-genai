@@ -36,7 +36,6 @@ class ItaVerb(BaseModel):
     english: str
     auxiliary_verb: str
     has_irregular_conjugations: bool
-    is_reflexive: bool
     conjugations: Conjugation
 
 config = types.GenerateContentConfig(
@@ -48,7 +47,9 @@ class GenVerb:
     def __init__(self, apikey):
         self.client = genai.Client(api_key=apikey)
 
-    def gen_verb_data(self, verb):
-        return self.client.models.generate_content(model=MODEL,
+    def gen_verb_data(self, verb) -> ItaVerb:
+        genVerb = self.client.models.generate_content(model=MODEL,
             config=config,
             contents=PROMPT.format(verb))
+        
+        return genVerb.parsed

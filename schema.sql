@@ -1,12 +1,8 @@
 CREATE TABLE IF NOT EXISTS verbs (
-    verb VARCHAR(50) PRIMARY KEY,
+    inf_pre VARCHAR(50) PRIMARY KEY,
     eng VARCHAR(50),
     aux_verb VARCHAR(20),
     is_irregular BOOLEAN,
-    is_reflexive BOOLEAN,
-
-    -- Infinito
-    inf_pre VARCHAR(50),
 
     -- Gerundio
     ger_pre VARCHAR(50),
@@ -37,4 +33,10 @@ CREATE TABLE IF NOT EXISTS verbs (
 
     -- Imperativo
     imp_pre VARCHAR(255)
-)
+);
+
+CREATE TABLE IF NOT EXISTS reflexive_verbs (
+    inf_pre VARCHAR(50) PRIMARY KEY,
+    regular_form VARCHAR(50),
+    FOREIGN KEY (regular_form) REFERENCES verbs(inf_pre)
+);
