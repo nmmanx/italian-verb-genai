@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS verbs (
     inf_pre VARCHAR(50) PRIMARY KEY,
-    eng VARCHAR(50),
+    eng VARCHAR(150),
     aux_verb VARCHAR(20),
     is_irregular BOOLEAN,
 
