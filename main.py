@@ -48,20 +48,26 @@ class BackEnd:
         is_reflexive = self.is_reflexive(verb)
         regular_form = self.regular_form(verb)
 
+        if is_reflexive and self.db.hasReflexiveVerb(verb):
+            print("Skip: ", verb)
+
         self.db.connect()
         if is_reflexive and not self.db.hasVerb(regular_form):
             self.db.close()
             self.addVerb(regular_form)
-        
-        print("addVerb: ", verb)
 
         if is_reflexive:
             with self.db.connect():
+                print("addVerb: ", verb)
                 self.db.addReflexiveVerb(verb, regular_form)
         else:
-            itaverb = GenVerb(self.apikey).gen_verb_data(regular_form)
-            with self.db.connect():
-                self.db.addVerb(itaverb)
+            if not self.db.hasVerb(verb):
+                print("addVerb: ", verb)
+                itaverb = GenVerb(self.apikey).gen_verb_data(regular_form)
+                with self.db.connect():
+                    self.db.addVerb(itaverb)
+            else:
+                print("Skip: ", verb)
 
 def main():
     apikey=readApiKey()
@@ -73,8 +79,8 @@ def main():
     backend.init()
 
     frontend = FrontEnd(backend)
-    frontend.addVerbFromFile("verb_list/ita/top20.txt", -1)
-    frontend.addVerbFromFile("verb_list/ita/top10_ref.txt", -1)
+    frontend.addVerbFromFile("verb_list/ita/top20.txt", 5)
+    frontend.addVerbFromFile("verb_list/ita/top10_ref.txt", 5)
 
 if __name__ == "__main__":
     main()

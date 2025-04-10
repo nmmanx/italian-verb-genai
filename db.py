@@ -50,7 +50,13 @@ class Database:
             print(e)
 
     def hasVerb(self, verb):
-        query = "SELECT inf_pre FROM verbs WHERE inf_pre=?"
+        query = "SELECT inf_pre FROM verb WHERE inf_pre=?"
+        cursor = self.conn.cursor()
+        res = cursor.execute(query, (verb, )).fetchall()
+        return len(res) > 0
+
+    def hasReflexiveVerb(self, verb):
+        query = "SELECT inf_pre FROM reflexive_verb WHERE inf_pre=?"
         cursor = self.conn.cursor()
         res = cursor.execute(query, (verb, )).fetchall()
         return len(res) > 0
@@ -58,7 +64,7 @@ class Database:
     def addVerb(self, verb: ItaVerb):
         columns_str = ",".join(COLUMNS_TABLE_VERB)
         placeholders = ",".join(["?"] * len(COLUMNS_TABLE_VERB))
-        query = f"INSERT INTO verbs ({columns_str}) VALUES ({placeholders})"
+        query = f"INSERT INTO verb ({columns_str}) VALUES ({placeholders})"
 
         values = []
         for c in COLUMNS_TABLE_VERB:
@@ -112,7 +118,7 @@ class Database:
         self.conn.commit()
 
     def addReflexiveVerb(self, verb, regular_form):
-        query = "INSERT INTO reflexive_verbs (inf_pre, regular_form) VALUES (?, ?)"
+        query = "INSERT INTO reflexive_verb (inf_pre, regular_form) VALUES (?, ?)"
         cursor = self.conn.cursor()
         cursor.execute(query, (verb, regular_form))
         self.conn.commit()
