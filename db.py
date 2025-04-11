@@ -1,5 +1,5 @@
 import sqlite3
-from genverb import ItaVerb
+from genai import ItaVerb
 
 DB_NAME = "itaverb.db"
 

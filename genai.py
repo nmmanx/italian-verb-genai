@@ -3,11 +3,20 @@ from google.genai import types
 from pydantic import BaseModel
 
 MODEL = "gemini-2.0-flash"
-PROMPT="""Generate verb conjugations for the italian verb \"{}\" with the following requirements:
+
+PROMPT_GEN_VERB="""Generate verb conjugations for the italian verb \"{}\" with the following requirements:
 - Only giving the conjugated verb, no need pronouns.
 - The conjugation list must have 6 elements and be ordered: 1st-person singular, 2nd-person singular, 3rd-person singular, 1st-person plural, 2nd-person plural, 3rd-person plural.
 - For imperativo, list all conjugations except 1st-person (leave it bank).
 """
+
+PROMPT_GEN_EXAMPLE="""Generate {} Italian sentences using the verb \"{}\" conjugated for {} pronoun in the tense \"{}\". Following:
+- The sentenses are medium-length and easy to understand.
+- The sentences contain contextual information (time, place, etc) to determine the verb tense.
+- Highlight the conjugated verbs by putting them within [ ].
+"""
+
+PRONOUNS = [ "1st singular", "2nd singular", "3rd singular", "1st plural", "2nd plural", "3rd plural" ]
 
 class Conjugation(BaseModel):
     infinito_presente: str
@@ -37,18 +46,30 @@ class ItaVerb(BaseModel):
     has_irregular_conjugations: bool
     conjugations: Conjugation
 
-config = types.GenerateContentConfig(
+config_gen_verb = types.GenerateContentConfig(
     system_instruction="Your are a native Italian language teacher",
     response_mime_type="application/json",
     response_schema=ItaVerb)
 
-class GenVerb:
+config_gen_example = types.GenerateContentConfig(
+    system_instruction="Your are a native Italian language teacher",
+    response_mime_type="application/json",
+    response_schema=list[str])
+
+class GenAi:
     def __init__(self, apikey):
         self.client = genai.Client(api_key=apikey)
 
     def gen_verb_data(self, verb) -> ItaVerb:
         genVerb = self.client.models.generate_content(model=MODEL,
-            config=config,
-            contents=PROMPT.format(verb))
+            config=config_gen_verb,
+            contents=PROMPT_GEN_VERB.format(verb))
         
         return genVerb.parsed
+    
+    def gen_sentences(self, verb, tense, pronoun, count) -> list[str]:
+        genExample = self.client.models.generate_content(model=MODEL,
+            config=config_gen_example,
+            contents=PROMPT_GEN_EXAMPLE.format(str(count), verb, tense, pronoun))
+        
+        return genExample.parsed

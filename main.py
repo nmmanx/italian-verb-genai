@@ -1,4 +1,4 @@
-from genverb import GenVerb
+from genai import GenAi
 from db import Database
 
 def readApiKey():
@@ -63,7 +63,7 @@ class BackEnd:
         else:
             if not self.db.hasVerb(verb):
                 print("addVerb: ", verb)
-                itaverb = GenVerb(self.apikey).gen_verb_data(regular_form)
+                itaverb = GenAi(self.apikey).gen_verb_data(regular_form)
                 with self.db.connect():
                     self.db.addVerb(itaverb)
             else:
@@ -75,12 +75,15 @@ def main():
         print(".apikey not found")
         exit()
 
-    backend = BackEnd(apikey)
-    backend.init()
+    # backend = BackEnd(apikey)
+    # backend.init()
 
-    frontend = FrontEnd(backend)
-    frontend.addVerbFromFile("verb_list/ita/top20.txt", 5)
-    frontend.addVerbFromFile("verb_list/ita/top10_ref.txt", 5)
+    # frontend = FrontEnd(backend)
+    # frontend.addVerbFromFile("verb_list/ita/top20.txt", 5)
+    # frontend.addVerbFromFile("verb_list/ita/top10_ref.txt", 5)
+
+    genAi = GenAi(apikey).gen_sentences("chiedere", "Congiuntivo Presente", "3st singular", 3)
+    print(genAi)
 
 if __name__ == "__main__":
     main()
